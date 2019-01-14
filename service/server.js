@@ -14,7 +14,7 @@ app.use((req,res,next) => {
 
 /*** All routes ***/
 app.get('/getAllSurfboards', surfboardCtl.getAll);
-//app.get('/matchSurfboard', surfboardCtl.getMatched);
+app.get('/matchSurfboard', surfboardCtl.getMatched);
 //app.get('/final-ideas/updateIdea', ideaCtl.updateData);
 //app.get('/final-ideas/deleteIdea', ideaCtl.deleteData);
 

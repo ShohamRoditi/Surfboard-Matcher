@@ -1,11 +1,29 @@
-var Surfboard   = require('../models/surfboard');
+var Surfboard   = require('../models/surfboard'),
+    fetch       = require('node-fetch');
+
+async function getWeather(){
+    var result;
+    var url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=3663';
+
+    try {
+        const response = await fetch(url);
+        result = await response.json();
+    } 
+    catch (error) {
+        console.log(error);
+    }
+
+        return result;
+      
+}
+
 
 module.exports = {
 
     getAll: async function(req, res){
-        console.log("here");
-        const result = await Surfboard.find({});
-        
+        //const result = await Surfboard.find({});
+        const result = await getWeather();
+        console.log(result);
         if(result)
             res.send(JSON.stringify(result));
         else res.status(404).send(`{"Failure": "No Documents Were Found"}`);
@@ -20,5 +38,4 @@ module.exports = {
 
         res.send(JSON.stringify(result));
     }
-
 }

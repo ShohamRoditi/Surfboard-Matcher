@@ -1,12 +1,17 @@
 var consts      = require("./consts"),
     mongoose    = require('mongoose');
 
-var Ideas   = require('./models/idea'),
+var Surfboard   = require('./models/surfboard'),
+
     options = {
+        useNewUrlParser:    true,
+        useCreateIndex:     true,
+        user:               consts.DB_USER,
+        pass:               consts.DB_PASS,
         autoReconnect :true
     };
 
-mongoose.connect(consts.MLAB_KEY,options).then(
+mongoose.connect(consts.MLAB_URL,options).then(
         () => {
             console.log('connected');
         },

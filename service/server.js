@@ -12,7 +12,7 @@ app.use((req,res,next) => {
     next();
 });
 
-/*** All routes ***/
+/*** All routes yuval ***/
 app.get('/getAllSurfboards', surfboardCtl.getAll);
 app.get('/matchSurfboard', surfboardCtl.getMatched);
 //app.get('/final-ideas/updateIdea', ideaCtl.updateData);

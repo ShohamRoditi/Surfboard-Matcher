@@ -1,6 +1,4 @@
 var mongoose    = require('mongoose'),
-    Surfboard   = require("./surfboard"),
-    ObjectId    = mongoose.SchemaTypes.ObjectId,
     user        = new mongoose.Schema({
         email:{
             type: String,
@@ -16,6 +14,15 @@ var mongoose    = require('mongoose'),
         surfboards: []
     });
 
+user.path('level').validate( 
+    (val) => {
+        if (val < 0)
+            return false;
+        
+        return true;
+    }, "Level was not defined");
+
 var User = mongoose.model('User', user);
+
 
 module.exports = User;

@@ -3,9 +3,6 @@ const User      = require('../models/user.js'),
 
 module.exports = {
 
-//app.put('/updateUser', userCtl.updateUser);
-
-
     getHistory: async function(req, res){
         const result = await User.find({email: req.query.email});
 
@@ -42,12 +39,19 @@ module.exports = {
 
     updateUser: async function(req, res){
         const conditions = {email: req.query.email},
-              update     = {height: req.query.height, weight: req.query.weight, level: req.query.level};
+              {height = 0, weight = 0, level = -1} = req.query,
+              update     = {height: height, weight: weight, level: level};
+              opts       = {runValidators: true};
 
-        const result = await User.updateOne(conditions, update);
+        User.updateOne(conditions, update, opts).then( result => {
+            if(result.nModified === 0){
+                res.status(200).send(`{"result": "Failure"}`);
+                return;
+            }
 
-        console.log(result);
-
-        res.status(200).send("d");
+            res.status(200).send(`{"result": "Success"}`);
+         }, err =>{
+            res.status(404).send({"result": "Failure"});
+         })
     }
 }

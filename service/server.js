@@ -15,16 +15,18 @@ app.use((req, res, next) => {
     next();
 });
 
-/*** All routes ***/
+/*** Surfboard routes ***/
 app.get('/getAllSurfboards', surfboardCtl.getAll);
 app.get('/matchSurfboard', surfboardCtl.getMatched);
-//app.put('/updateSurfboard', surfboardCtl.updateSurfboard);
-//app.post('/admin/addSurfboard', surfboardCtl.addSurfboard);
-//app.delete('/admin/deleteSurfboard', surfboardCtl.deleteSurfboard);
+app.put('/admin/updateSurfboard', surfboardCtl.updateSurfboard);
+app.post('/admin/addSurfboard', surfboardCtl.addSurfboard);
+app.delete('/admin/deleteSurfboard', surfboardCtl.deleteSurfboard);
+
+/*** User routes ***/
 app.get('/getHistory', userCtl.getHistory);
 app.post('/addUser', userCtl.addUser);
 app.put('/updateUser', userCtl.updateUser);
-app.post('/addUserSurfboard', userCtl.addUserSurfboard);
+app.put('/addUserSurfboard', userCtl.addUserSurfboard);
 
 app.listen(port, () => {
     console.log(`listening on port ${port}`);

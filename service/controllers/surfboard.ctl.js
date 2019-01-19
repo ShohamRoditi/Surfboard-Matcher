@@ -87,5 +87,26 @@ module.exports = {
         if(result)
             res.send(JSON.stringify(result));
         else res.status(404).send(`{result: No Documents Were Found.}`);
+    },
+
+    updateSurfboard: async function(req,res){
+
+    },
+
+    deleteSurfboard: async function(req,res){
+        const result = await Surfboard.findOneAndDelete({_id: req.query._id});
+        res.send(JSON.stringify(result));
+    },
+
+    addSurfboard: async function(req,res){
+        const {brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null} = req.body;
+        const surfboard = new Surfboard({brand, maxSwell, height, width, thickness, userMinWeight, userMaxWeight});
+        
+        surfboard.save().then( result => {
+            console.log(result);
+            res.send(result);
+        }, err => {
+            res.send(err);
+        });
     }
 }

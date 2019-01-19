@@ -1,9 +1,9 @@
-var Surfboard   = require('../models/surfboard'),
-    fetch       = require('node-fetch');
+const Surfboard   = require('../models/surfboard'),
+      fetch       = require('node-fetch');
 
-async function getWeather(){
-    var result;
-    var url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=3663';
+async function getWeather(location){
+    let result;
+    let url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=' + location;
 
     try {
         const response = await fetch(url);
@@ -13,16 +13,64 @@ async function getWeather(){
         console.log(error);
     }
 
-        return result;
+    return parseFloat(result[result.length - 1].swell.absMaxBreakingHeight);
       
 }
 
+function getRange(weight, level){
+
+    let min = 35;
+    let max = 45;
+
+    if(weight < min){
+        return 35;
+    }
+
+    if(weight > 105){
+        return 96;
+    }
+
+    for(let i = 0; i < 7; ++i){
+        if(weight >= min && weight <= max){
+            if(level >= 4 && level < 6){
+                if(min <= 46)
+                    return 35;
+                
+                return min - 10;
+            }
+
+            if(level >=6 && level < 8){
+                if(min <= 56)
+                    return 35;
+
+                return min - 20;
+            }
+            
+            if(level >= 8 && level <= 10){
+                if(min <= 66)
+                    return 35;
+
+                return min - 30;
+            }
+
+            return min;
+        }
+
+        if(min === 35){
+            min = 46;
+            max = 55;
+            continue;
+        }
+
+        min += 10;
+        max += 10;
+    }
+}
 
 module.exports = {
 
     getAll: async function(req, res){
         const result = await Surfboard.find({});
-        //const result = await getWeather();
 
         if(result)
             res.send(JSON.stringify(result));
@@ -30,12 +78,14 @@ module.exports = {
     },
 
     getMatched: async function(req, res){
-        const conditions = {height:{$gt: parseFloat(req.query.height), $lt: parseFloat(req.query.height) + 0.8}, userWeightMin: {$gt: parseFloat(req.query.weight) - 1},
-                            userWeightMax: {$lt: parseFloat(req.query.weight) + 20}};
-        let result;
-        console.log(conditions);
-        result = await Surfboard.find(conditions);
+        let minWeight = getRange(parseFloat(req.query.weight), parseInt(req.query.level));
+        let swellSize =  await getWeather(req.query.location);
+        const conditions = {height: {'$gt': parseFloat(req.query.height)}, userMinWeight: minWeight, maxSwell: {'$gt': swellSize}};
 
-        res.send(JSON.stringify(result));
+        let result = await Surfboard.find(conditions);
+
+        if(result)
+            res.send(JSON.stringify(result));
+        else res.status(404).send(`{result: No Documents Were Found.}`);
     }
 }

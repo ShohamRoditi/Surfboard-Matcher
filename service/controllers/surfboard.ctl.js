@@ -68,7 +68,7 @@ function getRange(weight, level){
 }
 
 module.exports = {
-//get all 
+
     getAll: async function(req, res){
         const result = await Surfboard.find({});
         

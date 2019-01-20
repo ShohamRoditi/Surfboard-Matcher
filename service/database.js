@@ -1,13 +1,13 @@
-//const consts      = require("./consts"),
-const     mongoose    = require('mongoose'),
-      url         = process.env.MLAB_URL;
+const consts      = require("./consts"),
+      mongoose    = require('mongoose'),
+      url         = process.env.MLAB_URL || consts.MLAB_URL
 
 const Surfboard   = require('./models/surfboard'),
     options = {
         useNewUrlParser:    true,
         useCreateIndex:     true,
-        user:               process.env.DB_USER,
-        pass:               process.env.DB_PASS,
+        user:               process.env.DB_USER || consts.DB_USER,
+        pass:               process.env.DB_PASS || consts.DB_PASS,
         autoReconnect :true
     };
 

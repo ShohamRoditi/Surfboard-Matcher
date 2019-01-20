@@ -71,7 +71,7 @@ module.exports = {
 
     getAll: async function(req, res){
         const result = await Surfboard.find({});
-
+        
         if(result)
             res.send(JSON.stringify(result));
         else res.status(404).send(`{"Failure": "No Documents Were Found"}`);

@@ -104,9 +104,9 @@ module.exports = {
         
         surfboard.save().then( result => {
             console.log(result);
-            res.send(result);
+            res.status(200).send(result);
         }, err => {
-            res.send(err);
+            res.status(404).send(`{"result": "Failure"}`);
         });
     }
 }

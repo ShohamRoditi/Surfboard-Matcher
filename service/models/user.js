@@ -24,5 +24,4 @@ user.path('level').validate(
 
 var User = mongoose.model('User', user);
 
-
 module.exports = User;

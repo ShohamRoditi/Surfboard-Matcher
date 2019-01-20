@@ -1,17 +1,17 @@
-var consts      = require("./consts"),
-    mongoose    = require('mongoose');
+//const consts      = require("./consts"),
+const     mongoose    = require('mongoose'),
+      url         = process.env.MLAB_URL;
 
-var Surfboard   = require('./models/surfboard'),
-
+const Surfboard   = require('./models/surfboard'),
     options = {
         useNewUrlParser:    true,
         useCreateIndex:     true,
-        user:               consts.DB_USER,
-        pass:               consts.DB_PASS,
+        user:               process.env.DB_USER,
+        pass:               process.env.DB_PASS,
         autoReconnect :true
     };
 
-mongoose.connect(consts.MLAB_URL,options).then(
+mongoose.connect(url ,options).then(
         () => {
             console.log('connected');
         },

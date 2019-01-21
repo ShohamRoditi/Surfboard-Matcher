@@ -69,7 +69,7 @@ function getRange(weight, level){
 
 module.exports = {
 
-    getAll: async function(req, res){
+    getAll: async (req, res) => {
         Surfboard.find({}).then(result => {
             if(result)
                 res.send(JSON.stringify(result));
@@ -79,7 +79,7 @@ module.exports = {
         });
     },
 
-    getMatched: async function(req, res){
+    getMatched: async (req, res) => {
         let minWeight = getRange(parseFloat(req.query.weight), parseInt(req.query.level));
         let swellSize =  await getWeather(req.query.location);
         const conditions = {height: {'$gt': parseFloat(req.query.height)}, userMinWeight: minWeight, maxSwell: {'$gt': swellSize}};
@@ -91,39 +91,50 @@ module.exports = {
         else res.status(404).send(`{result: No Documents Were Found.}`);
     },
 
-    updateSurfboard: async function(req,res){
-        Surfboard.updateOne({_id: req.query.id}, {brand: req.query.brand})
+    updateSurfboard: async (req,res) => {
+        const {brand = null} = req.query;
+        const opts = {runValidators: true};
+
+        Surfboard.updateOne({_id: req.query.id}, {brand: brand}, opts)
         .then(result =>{
                 if(result && result.nModified > 0)
-                    res.status(200).send(`{"result": "Success", "params": {"id": "${req.query.id}", "brand": "${req.query.brand}"}}`);
-                else res.status(404).send(`{"result": "Failure", "params": {"id": "${req.query.id}", "brand": "${req.query.brand}"}}`)
+                    res.status(200).send(`{"result": "Success", "params": {"id": "${req.query.id}", "brand": "${brand}"}}`);
+                else res.status(404).send(`{"result": "Failure", "params": {"id": "${req.query.id}", "brand": "${brand}"}}`)
             }, err => {
-                res.status(404).send(`{"result": "Failure"}`);
+                res.status(404).send(`{"result": "Failure", "params":{"id": "${req.query.id}", "brand": "${brand}"}, "error": ${JSON.stringify(err)}}`);
         });
     },
 
-    deleteSurfboard: async function(req,res){
+    deleteSurfboard: async (req,res) => {
         Surfboard.findOneAndDelete({_id: req.query.id}).then(result => {
             if(result)
                 res.send(`{"result": "Success", "params": {"id": "${req.query.id}"}}`);
             else res.send(`{"result": "Failure", "params": {"id": "${req.query.id}"}}`);
         }, err => {
-            res.send(`{"result": "Failure", "params": {"id": "${req.query.id}"}, "err": "${err}"`);
+            res.send(`{"result": "Failure", "params": {"id": "${req.query.id}", "brand": "${req.query.brand}"}, "error": ${JSON.stringify(err)}}`);
         })
         
     },
 
-    addSurfboard: async function(req,res){
-        const {brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null} = req.body;
-        const surfboard = new Surfboard({brand, maxSwell, height, width, thickness, userMinWeight, userMaxWeight});
+    addSurfboard: async (req,res) => {
+        const {brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null} = req.body,
+               minWeight = getRange(userMinWeight, 0);
+        var maxWeight;
+
+        if(minWeight == 35){
+            maxWeight = 45;
+        }
+        else maxWeight = minWeight + 9;
         
+        const surfboard  = new Surfboard({brand, maxSwell, height, width, thickness, userMinWeight: minWeight, userMaxWeight: maxWeight});
+
         surfboard.save()
         .then(result => {
             if(result)
                 res.status(200).send(`{"result": "Success", "params": ${JSON.stringify(result)}}`);
             else res.status(404).send(`{"result": "Failure", "params":${JSON.stringify(result)}}`);
         }, err => {
-            res.status(404).send(`{"result": "Failure", "params": ${JSON.stringify(result)}`);
+            res.status(404).send(`{"result": "Failure", "params": ${JSON.stringify(surfboard)}, "error": ${JSON.stringify(err)}}`);
         });
     }
 }

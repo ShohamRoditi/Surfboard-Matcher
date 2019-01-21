@@ -15,21 +15,15 @@ var mongoose    = require('mongoose'),
         surfboards: []
     });
 
-user.path('level').validate( 
-    (val) => {
-        if (val < 0)
-            return false;
-        
-        return true;
-    }, "Level was not defined correctly.");
+/* Validations */
 
 user.path('email').validate( 
     (val) => {
         if (!val)
-            return false;
+        return false;
         
         if(!validator(val))
-            return false;
+        return false;
         
         return true;
     }, "Email was not defined correctly.");
@@ -37,26 +31,36 @@ user.path('email').validate(
 user.path('name').validate( 
     (val) => {
         if (!val)
-            return false;
+        return false;
         
         return true;
     }, "Name was not defined correctly.");
-
+    
 user.path('height').validate( 
     (val) => {
         if (val < 80 || !val)
-            return false;
+        return false;
         
         return true;
     }, "Height was not defined correctly. Height should be at least 80cm.");
 
-user.path('weight').validate( 
+user.path('level').validate( 
     (val) => {
-        if (!val || val < 10)
+        if (val < 0)
             return false;
         
         return true;
+    }, "Level was not defined correctly.");
+            
+user.path('weight').validate( 
+    (val) => {
+        if (!val || val < 10)
+        return false;
+        
+        return true;
     }, "Weight was not defined correctly. Weight should be at least 10kg.");
+                
+/* End Of Validations*/
 
 var User = mongoose.model('User', user);
 

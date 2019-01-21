@@ -24,7 +24,7 @@ surfboard.path('maxSwell').validate(
             return false;
         
         return true;
-}, "maxSwell was not defined correctly. maxSwell should be at least 1m.");
+    }, "maxSwell was not defined correctly. maxSwell should be at least 1m.");
 
 surfboard.path('height').validate( 
     (val) => {
@@ -65,7 +65,7 @@ surfboard.path('userMaxWeight').validate(
         
         return true;
     }, "userMaxWeight was not defined correctly. userMaxWeight should be at least 45kg and no more than 105.");
-    
+
 /* End Of Validations*/
 
 var Surfboard = mongoose.model('Surfboard', surfboard);

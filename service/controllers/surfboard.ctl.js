@@ -70,11 +70,13 @@ function getRange(weight, level){
 module.exports = {
 
     getAll: async function(req, res){
-        const result = await Surfboard.find({});
-        
-        if(result)
-            res.send(JSON.stringify(result));
-        else res.status(404).send(`{"Failure": "No Documents Were Found"}`);
+        Surfboard.find({}).then(result => {
+            if(result)
+                res.send(JSON.stringify(result));
+            else res.status(404).send(`{"Failure": "No Documents Were Found"}`);
+        }, err =>{
+            res.status(404).send(`{"Failure": "No Documents Were Found"}`);
+        });
     },
 
     getMatched: async function(req, res){
@@ -90,19 +92,34 @@ module.exports = {
     },
 
     updateSurfboard: async function(req,res){
-
+        Surfboard.updateOne({_id: req.query.id}, {brand: req.query.brand})
+        .then(result =>{
+                console.log(result);
+                if(result && result.nModified > 0)
+                    res.status(200).send(`{"result": "Success", "params": ${req.query.id}, ${req.query.brand}}`);
+                else res.status(404).send(`{"result": "Failure", , "params": ${req.query.id}, ${req.query.brand}}`)
+            }, err => {
+                res.status(404).send(`{"result": "Failure"}`);
+        });
     },
 
     deleteSurfboard: async function(req,res){
-        const result = await Surfboard.findOneAndDelete({_id: req.query._id});
-        res.send(JSON.stringify(result));
+        Surfboard.findOneAndDelete({_id: req.query._id}).then(result => {
+            if(result)
+                res.send(`{"result": "Success", "params": ${req.query.id}}`);
+            else res.send(`{"result": "Failure", "params": ${req.query.id}}`)
+        }, err => {
+            res.send(`{"result": "Failure", "params": ${req.query.id}}, "err": ${err}`);
+        })
+        
     },
 
     addSurfboard: async function(req,res){
         const {brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null} = req.body;
         const surfboard = new Surfboard({brand, maxSwell, height, width, thickness, userMinWeight, userMaxWeight});
         
-        surfboard.save().then( result => {
+        surfboard.save()
+        .then(result => {
             console.log(result);
             res.status(200).send(result);
         }, err => {

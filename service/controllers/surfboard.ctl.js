@@ -83,12 +83,14 @@ module.exports = {
         let minWeight = getRange(parseFloat(req.query.weight), parseInt(req.query.level));
         let swellSize =  await getWeather(req.query.location);
         const conditions = {height: {'$gt': parseFloat(req.query.height)}, userMinWeight: minWeight, maxSwell: {'$gt': swellSize}};
-
-        let result = await Surfboard.find(conditions);
-
-        if(result)
-            res.send(JSON.stringify(result));
-        else res.status(404).send(`{result: No Documents Were Found.}`);
+       
+        Surfboard.find(conditions).then(result => {
+            if(result)
+                res.send(JSON.stringify(result));
+            else res.status(404).send(`{result: No Documents Were Found.}`);
+        }, err =>{
+            res.status(404).send(`{result: No Documents Were Found.}`);
+        });
     },
 
     updateSurfboard: async function(req,res){

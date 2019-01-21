@@ -94,22 +94,21 @@ module.exports = {
     updateSurfboard: async function(req,res){
         Surfboard.updateOne({_id: req.query.id}, {brand: req.query.brand})
         .then(result =>{
-                console.log(result);
                 if(result && result.nModified > 0)
-                    res.status(200).send(`{"result": "Success", "params": ${req.query.id}, ${req.query.brand}}`);
-                else res.status(404).send(`{"result": "Failure", , "params": ${req.query.id}, ${req.query.brand}}`)
+                    res.status(200).send(`{"result": "Success", "params": {"id": "${req.query.id}", "brand": "${req.query.brand}"}}`);
+                else res.status(404).send(`{"result": "Failure", "params": {"id": "${req.query.id}", "brand": "${req.query.brand}"}}`)
             }, err => {
                 res.status(404).send(`{"result": "Failure"}`);
         });
     },
 
     deleteSurfboard: async function(req,res){
-        Surfboard.findOneAndDelete({_id: req.query._id}).then(result => {
+        Surfboard.findOneAndDelete({_id: req.query.id}).then(result => {
             if(result)
-                res.send(`{"result": "Success", "params": ${req.query.id}}`);
-            else res.send(`{"result": "Failure", "params": ${req.query.id}}`)
+                res.send(`{"result": "Success", "params": {"id": "${req.query.id}"}}`);
+            else res.send(`{"result": "Failure", "params": {"id": "${req.query.id}"}}`);
         }, err => {
-            res.send(`{"result": "Failure", "params": ${req.query.id}}, "err": ${err}`);
+            res.send(`{"result": "Failure", "params": {"id": "${req.query.id}"}, "err": "${err}"`);
         })
         
     },
@@ -120,10 +119,11 @@ module.exports = {
         
         surfboard.save()
         .then(result => {
-            console.log(result);
-            res.status(200).send(result);
+            if(result)
+                res.status(200).send(`{"result": "Success", "params": ${JSON.stringify(result)}}`);
+            else res.status(404).send(`{"result": "Failure", "params":${JSON.stringify(result)}}`);
         }, err => {
-            res.status(404).send(`{"result": "Failure"}`);
+            res.status(404).send(`{"result": "Failure", "params": ${JSON.stringify(result)}`);
         });
     }
 }

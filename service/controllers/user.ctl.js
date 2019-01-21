@@ -3,7 +3,7 @@ const User      = require('../models/user.js'),
 
 module.exports = {
 
-    getHistory: async function(req, res){
+    getHistory: async (req, res) => {
         const result = await User.find({email: req.query.email});
 
         if(result)
@@ -11,7 +11,7 @@ module.exports = {
         else res.status(404).send(`{"Failure": "No Documents Were Found"}`);
     },
 
-    addUserSurfboard: async function(req, res){
+    addUserSurfboard: async (req, res) => {
 
         const {_id = null, brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null, email = null} = req.body;
         const surfboard = new Surfboard({_id, brand, maxSwell, height, width, thickness, userMinWeight, userMaxWeight});
@@ -23,7 +23,7 @@ module.exports = {
         else res.status(404).send(`{"result": "Failure"}`);
     },
     
-    addUser: async function(req, res){
+    addUser: async (req, res) => {
         const {email = null, name = null} = req.body;
         const user = new User({email, name});
         
@@ -37,7 +37,7 @@ module.exports = {
         });
     },
 
-    updateUser: async function(req, res){
+    updateUser: async (req, res) => {
         const conditions = {email: req.query.email},
               {height = 0, weight = 0, level = -1} = req.query,
               update     = {height: height, weight: weight, level: level};

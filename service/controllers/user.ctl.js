@@ -4,10 +4,12 @@ const User      = require('../models/user.js'),
 module.exports = {
 
     getHistory: async (req, res) => {
-        User.find({email: req.query.email}).then( (result) =>{
-            if(result)
-                res.send(JSON.stringify(result[0].surfboards));
-            else res.status(404).send(`{"Failure": "No Documents Were Found"}`);
+        User.find({email: req.query.email}).then( (result) => {
+            if(!result.length)
+                res.status(404).send(`{"result": "Faliure", "error": "No Documents Were Found", "params": "${req.query.email}"}`);
+            else if (!result[0].surfboards.length)
+                res.send(`{"result": "Faliure", "error": "User History Is Empty.", "params": "${req.query.email}"}`);
+            else res.send(JSON.stringify(result[0].surfboards));
        },
        (err) =>{
            res.status(404).send(`{"Failure": "No Documents Were Found", "error": ${JSON.stringify(err)}}`);
@@ -34,13 +36,13 @@ module.exports = {
         const user = new User({email, name});
         
         
-        user.save().then( (result) =>{
+        user.save().then( (result) => {
+            console.log(result);
             res.status(200).send(`{"result": "Success", "params": ${JSON.stringify(result)}}`);
-
         },
         (err) =>{
             console.log(err);
-            res.status(404).send(`{"result": "Failure", "params": ${JSON.stringify(result)}, "error": ${JSON.stringify(err)}}`);
+            res.status(404).send(`{"result": "Failure", "params":{"email": "${email}", "name": "${name}"}, "error": ${JSON.stringify(err)}}`);
         });
     },
 

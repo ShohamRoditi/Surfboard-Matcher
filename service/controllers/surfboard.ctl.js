@@ -3,7 +3,7 @@ const Surfboard   = require('../models/surfboard'),
 
 async function getWeather(location){
     let result;
-    let url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=' + location;
+    let url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=' + location + "&fields=swell.maxBreakingHeight";
 
     try {
         const response = await fetch(url);
@@ -13,10 +13,11 @@ async function getWeather(location){
         console.log(error);
     }
 
+    //console.log(result.error_response);
     if(result.error_response)
         return -1;
-
-    return parseFloat(result[result.length - 1].swell.absMaxBreakingHeight);
+    console.log(result[0]);
+    return parseFloat(result[0].swell.maxBreakingHeight);
       
 }
 
@@ -88,7 +89,7 @@ module.exports = {
         const conditions = {height: {'$gt': parseFloat(req.query.height)}, userMinWeight: minWeight, maxSwell: {'$gt': swellSize}};
 
         if(swellSize < 0){
-            res.status(404).send(`{"result": "Failure", "params":{"conditions": ${JSON.stringify(conditions)}}, "error": "No Match Found"}`);
+            res.status(404).send(`{"result": "Failure", "params":{"conditions": ${JSON.stringify(conditions)}, "location": "${req.query.location}"}, "error": "No Match Found"}`);
             return;
         }
 

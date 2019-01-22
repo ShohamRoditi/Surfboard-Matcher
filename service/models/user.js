@@ -46,11 +46,11 @@ user.path('height').validate(
 
 user.path('level').validate( 
     (val) => {
-        if (val < 0)
+        if (val < 0 || val > 10)
             return false;
         
         return true;
-    }, "Level was not defined correctly.");
+    }, "Level was not defined correctly. Level should be at least 0 and no more than 10.");
             
 user.path('weight').validate( 
     (val) => {

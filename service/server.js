@@ -28,7 +28,11 @@ app.post('/addUser', userCtl.addUser);
 app.put('/updateUser', userCtl.updateUser);
 app.put('/addUserSurfboard', userCtl.addUserSurfboard);
 
-app.all("*", (req, res) => {
+app.get('/api', (req, res) => {
+    res.redirect('https://documenter.getpostman.com/view/5628146/RztfvBcS');
+});
+
+app.all('*', (req, res) => {
     res.status(404).send(`{"result": "Failure", "error": "Bad Route"}`)
 });
 

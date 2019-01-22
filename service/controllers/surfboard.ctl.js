@@ -13,6 +13,9 @@ async function getWeather(location){
         console.log(error);
     }
 
+    if(result.error_response)
+        return 0;
+
     return parseFloat(result[result.length - 1].swell.absMaxBreakingHeight);
       
 }
@@ -85,11 +88,11 @@ module.exports = {
         const conditions = {height: {'$gt': parseFloat(req.query.height)}, userMinWeight: minWeight, maxSwell: {'$gt': swellSize}};
 
         Surfboard.find(conditions).then(result => {
-            if(result)
+            if(result.length)
                 res.send(JSON.stringify(result));
-            else res.status(404).send(`{result: No Documents Were Found.}`);
-        }, err =>{
-            res.status(404).send(`{result: No Documents Were Found.}`);
+            else res.status(404).send(`{"result": "Failure", "params":{"conditions": ${JSON.stringify(conditions)}}, "error": "No Match Found"}`);
+        }, err => {
+            res.status(404).send(`{"result": "Failure", "params":{"conditions": ${JSON.stringify(conditions)}, "brand": "${brand}"}, "error": ${JSON.stringify(err)} }`);
         });
     },
 

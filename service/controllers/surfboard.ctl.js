@@ -92,7 +92,7 @@ module.exports = {
                 res.send(JSON.stringify(result));
             else res.status(404).send(`{"result": "Failure", "params":{"conditions": ${JSON.stringify(conditions)}}, "error": "No Match Found"}`);
         }, err => {
-            res.status(404).send(`{"result": "Failure", "params":{"conditions": ${JSON.stringify(conditions)}, "brand": "${brand}"}, "error": ${JSON.stringify(err)} }`);
+            res.status(404).send(`{"result": "Failure", "params":{"conditions": ${JSON.stringify(conditions)}}, "error": ${JSON.stringify(err)} }`);
         });
     },
 

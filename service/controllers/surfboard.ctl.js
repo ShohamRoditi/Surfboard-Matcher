@@ -14,7 +14,7 @@ async function getWeather(location){
     }
 
     if(result.error_response)
-        return 0;
+        return -1;
 
     return parseFloat(result[result.length - 1].swell.absMaxBreakingHeight);
       
@@ -86,6 +86,11 @@ module.exports = {
         let minWeight = getRange(parseFloat(req.query.weight), parseInt(req.query.level));
         let swellSize =  await getWeather(req.query.location);
         const conditions = {height: {'$gt': parseFloat(req.query.height)}, userMinWeight: minWeight, maxSwell: {'$gt': swellSize}};
+
+        if(swellSize < 0){
+            res.status(404).send(`{"result": "Failure", "params":{"conditions": ${JSON.stringify(conditions)}}, "error": "No Match Found"}`);
+            return;
+        }
 
         Surfboard.find(conditions).then(result => {
             if(result.length)

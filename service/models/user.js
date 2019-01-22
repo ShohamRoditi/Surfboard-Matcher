@@ -46,7 +46,7 @@ user.path('height').validate(
 
 user.path('level').validate( 
     (val) => {
-        if (val < 0 || val > 10)
+        if (!val || val < 0 || val > 10)
             return false;
         
         return true;

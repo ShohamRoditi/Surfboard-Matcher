@@ -30,7 +30,8 @@ app.put('/addUserSurfboard', userCtl.addUserSurfboard);
 
 app.all("*", (req, res) => {
     res.status(404).send(`{"result": "Failure", "error": "Bad Route"}`)
-})
+});
+
 app.listen(port, () => {
     console.log(`listening on port ${port}`);
 });

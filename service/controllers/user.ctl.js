@@ -6,9 +6,9 @@ module.exports = {
     getHistory: async (req, res) => {
         User.find({email: req.query.email}).then( (result) => {
             if(!result.length)
-                res.status(404).send(`{"result": "Faliure", "error": "No Documents Were Found", "params": "${req.query.email}"}`);
+                res.status(404).send(`{"result": "Failure", "error": "No Documents Were Found", "params": "${req.query.email}"}`);
             else if (!result[0].surfboards.length)
-                res.send(`{"result": "Faliure", "error": "User History Is Empty.", "params": "${req.query.email}"}`);
+                res.send(`{"result": "Failure", "error": "User History Is Empty.", "params": "${req.query.email}"}`);
             else res.send(JSON.stringify(result[0].surfboards));
        },
        (err) =>{
@@ -19,9 +19,9 @@ module.exports = {
     addUserSurfboard: async (req, res) => {
 
         const {_id = null, brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null} = req.body.surfboard;
-        const surfboard = new Surfboard({_id, brand, maxSwell, height, width, thickness, userMinWeight, userMaxWeight}),
-              {email = null} = req.body.email;
-        console.log(req.body.surfboard);
+        const surfboard = new Surfboard({_id, brand, maxSwell, height, width, thickness, userMinWeight, userMaxWeight});
+        const email = req.body.email;
+
         User.updateOne({email: email},{$push: {surfboards: surfboard}}).then( (result) => {
             if(result && result.nModified > 0)
                 res.status(200).send(`{"result": "Success", "params": {"email": "${req.body.email}", "update": ${JSON.stringify(surfboard)}}}`);

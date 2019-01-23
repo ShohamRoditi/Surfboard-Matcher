@@ -2,7 +2,7 @@ const User      = require('../models/user.js'),
       Surfboard = require('../models/surfboard');
 
 module.exports = {
-
+    /* Gets user's saved matching surfboards */
     getHistory: async (req, res) => {
         User.find({email: req.query.email}).then( (result) => {
             if(!result.length)
@@ -15,7 +15,7 @@ module.exports = {
            res.status(404).send(`{"Failure": "No Documents Were Found", "error": ${JSON.stringify(err)}}`);
        });
     },
-
+     /* Adds a surfboard to the user's saved matching surfboards history */
     addUserSurfboard: async (req, res) => {
 
         const {_id = null, brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null} = req.body.surfboard;
@@ -32,6 +32,7 @@ module.exports = {
         });     
     },
     
+    /* Adds a new user */
     addUser: async (req, res) => {
         const {email = null, name = null} = req.body;
         const user = new User({email, name});
@@ -47,6 +48,7 @@ module.exports = {
         });
     },
 
+    /* Updates a user's weight, height and level */ 
     updateUser: async (req, res) => {
         const conditions = {email: req.query.email},
               {height = 0, weight = 0, level = -1} = req.query,

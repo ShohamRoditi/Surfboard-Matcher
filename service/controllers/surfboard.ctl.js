@@ -1,6 +1,7 @@
 const Surfboard   = require('../models/surfboard'),
       fetch       = require('node-fetch');
 
+/* Connects to the external weather API to get wave height in the chosen location */
 async function getWeather(location){
     let result;
     let url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=' + location + '&fields=swell.maxBreakingHeight';
@@ -23,6 +24,7 @@ async function getWeather(location){
       
 }
 
+/* Figures the minimum weight limit of the surfboard according to the user's weight and surfing level */
 function getRange(weight, level){
 
     let min = 35;
@@ -75,6 +77,7 @@ function getRange(weight, level){
 
 module.exports = {
 
+    /* Gets all surfboards */
     getAll: async (req, res) => {
         Surfboard.find({}).then(result => {
             if(result)
@@ -85,6 +88,7 @@ module.exports = {
         });
     },
 
+    /* Gets matching surfboards according to the user's weight, surfing level and wave height in chosen location */
     getMatched: async (req, res) => {
         let minWeight = getRange(parseFloat(req.query.weight), parseInt(req.query.level));
         let swellSize =  await getWeather(req.query.location);
@@ -104,6 +108,7 @@ module.exports = {
         });
     },
 
+    /* For now, updates a surfboards Brand */
     updateSurfboard: async (req,res) => {
         const {brand = null} = req.query;
         const opts = {runValidators: true};
@@ -118,6 +123,7 @@ module.exports = {
         });
     },
 
+    /* Removes a surfboard */
     deleteSurfboard: async (req,res) => {
         Surfboard.findOneAndDelete({_id: req.query.id}).then(result => {
             if(result)
@@ -129,6 +135,7 @@ module.exports = {
         
     },
 
+    /* Adds a surfboard */
     addSurfboard: async (req,res) => {
         const {brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null} = req.body,
                minWeight = getRange(userMinWeight, 0);

@@ -18,8 +18,9 @@ module.exports = {
 
     addUserSurfboard: async (req, res) => {
 
-        const {_id = null, brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null, email = null} = req.body;
-        const surfboard = new Surfboard({_id, brand, maxSwell, height, width, thickness, userMinWeight, userMaxWeight});
+        const {_id = null, brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null} = req.body.surfboard;
+        const surfboard = new Surfboard({_id, brand, maxSwell, height, width, thickness, userMinWeight, userMaxWeight}),
+              {email = null} = req.body.email;
 
         User.updateOne({email: email},{$push: {surfboards: surfboard}}).then( (result) => {
             if(result && result.nModified > 0)

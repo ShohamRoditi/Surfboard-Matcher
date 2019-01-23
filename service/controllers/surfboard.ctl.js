@@ -17,10 +17,10 @@ async function getWeather(location){
     if(result.error_response)
         return -1;
     
-    if(result[result.length - 1].swell.maxBreakingHeight > 4)
+    if(result[0].swell.maxBreakingHeight > 4)
         return 4;
     
-    return(result[result.length - 1].swell.maxBreakingHeight);
+    return(result[0].swell.maxBreakingHeight);
       
 }
 

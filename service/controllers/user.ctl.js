@@ -21,7 +21,7 @@ module.exports = {
         const {_id = null, brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null} = req.body.surfboard;
         const surfboard = new Surfboard({_id, brand, maxSwell, height, width, thickness, userMinWeight, userMaxWeight}),
               {email = null} = req.body.email;
-
+        console.log(req.body.surfboard);
         User.updateOne({email: email},{$push: {surfboards: surfboard}}).then( (result) => {
             if(result && result.nModified > 0)
                 res.status(200).send(`{"result": "Success", "params": {"email": "${req.body.email}", "update": ${JSON.stringify(surfboard)}}}`);

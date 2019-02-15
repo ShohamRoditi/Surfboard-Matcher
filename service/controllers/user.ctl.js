@@ -89,10 +89,10 @@ module.exports = {
 
         User.find({email: email}).then(result => {
             if(result)
-                res.send(JSON.stringify(result));
-            else res.status(404).send(`{"Failure": "No Documents Were Found"}`);
+                res.send(JSON.stringify(`{"result": "Success", "response": ${JSON.stringify(result)}`));
+            else res.status(404).send(`{"result": "Failure", "response": "No Documents Were Found"}`);
         }, err =>{
-            res.status(404).send(`{"Failure": "No Documents Were Found"}`);
+            res.status(404).send(`{"result": "Failure", "response": "No Documents Were Found"}`);
         });
     }
 }

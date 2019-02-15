@@ -1,5 +1,6 @@
 const User      = require('../models/user.js'),
-      Surfboard = require('../models/surfboard');
+      Surfboard = require('../models/surfboard'),
+      ObjectId  = require('mongoose').Types.ObjectId;
 
 module.exports = {
     /* Gets user's saved matching surfboards */
@@ -17,7 +18,7 @@ module.exports = {
     },
      /* Adds a surfboard to the user's saved matching surfboards history */
     addUserSurfboard: async (req, res) => {
-
+        console.log(req.body);
         const {_id = null, brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null} = req.body.surfboard;
         const surfboard = new Surfboard({_id, brand, maxSwell, height, width, thickness, userMinWeight, userMaxWeight});
         const email = req.body.email;
@@ -65,5 +66,33 @@ module.exports = {
          }, err =>{
             res.status(404).send(`{"result": "Failure", "params":{"email": "${req.query.email}", "update": ${JSON.stringify(update)}}, "error": ${JSON.stringify(err)}}`);
          })
+    },
+
+    deleteFromHistory: async (req, res) => {
+        const {_id = null, email = null} = req.query;
+        var update = {$pull: {surfboards: {_id: ObjectId(_id)}}};
+
+        //User.find({email: email, surfboard})
+        User.updateOne({email: email}, update).then( (result) => {
+            if(result && result.nModified > 0)
+                res.status(200).send(`{"result": "Success", "params":{"email": "${req.query.email}", "id": "${req.query._id}"}}`);
+            else res.status(404).send(`{"result": "Failure", "params":{"email": "${req.query.email}", "id": "${req.query._id}"}}`);
+        },
+        (err) => {
+            console.log(err);
+            res.status(404).send(`{"result": "Failure", "params":{"email": "${req.query.email}", "id": "${req.query._id}", "error": ${JSON.stringify(err)}}`);
+        });     
+    },
+
+    getUser: async (req,res) => {
+        const email = req.query.email;
+
+        User.find({email: email}).then(result => {
+            if(result)
+                res.send(JSON.stringify(result));
+            else res.status(404).send(`{"Failure": "No Documents Were Found"}`);
+        }, err =>{
+            res.status(404).send(`{"Failure": "No Documents Were Found"}`);
+        });
     }
 }

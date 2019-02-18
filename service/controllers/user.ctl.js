@@ -88,6 +88,7 @@ module.exports = {
         const email = req.query.email;
 
         User.find({email: email}).then(result => {
+            console.log(result);
             if(result.length)
                 res.send(JSON.stringify(`{"result": "Success", "response": ${JSON.stringify(result)}`));
             else res.status(200).send(`{"result": "Failure", "response": "No Documents Were Found"}`);

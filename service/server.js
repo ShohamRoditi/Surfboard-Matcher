@@ -4,8 +4,7 @@ const   express      = require('express'),
         userCtl      = require('./controllers/user.ctl'),
         port         = process.env.PORT || 3000,
         parser       = require('body-parser'),
-        cors         = require('cors'),
-        http         = require('http').Server(app);
+        cors         = require('cors');
 
 var socket;
 
@@ -49,19 +48,14 @@ const server = app.listen(port, () => {
 const io = require('socket.io')(server);
 
 io.on('connection', (sock) => {
-    console.log('New user connected')
+    console.log('New user connected');
     socket = sock;
-	//default username
-	socket.username = "Anonymous"
-    
-    
-    //listen on new_message
+
     socket.on('disconnect', () => {
         //broadcast the new message
         console.log("bye")
     })
     
-    //listen on typing
     socket.on('connected', async () => {
         const result1 = await surfboardCtl.getWeather(194);
         const result2 = await surfboardCtl.getWeather(4219);

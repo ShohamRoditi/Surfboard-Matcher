@@ -86,11 +86,10 @@ module.exports = {
 
     getUser: async (req,res) => {
         const email = req.query.email;
-
+        
         User.find({email: email}).then(result => {
-            console.log(result);
             if(result.length)
-                res.send(JSON.stringify(`{"result": "Success", "response": ${JSON.stringify(result)}`));
+                res.status(200).send(JSON.stringify(result[0]));
             else res.status(200).send(`{"result": "Failure", "response": "No Documents Were Found"}`);
         }, err =>{
             res.status(404).send(`{"result": "Failure", "response": "No Documents Were Found"}`);

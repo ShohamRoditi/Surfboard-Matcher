@@ -4,7 +4,8 @@ const   express      = require('express'),
         userCtl      = require('./controllers/user.ctl'),
         port         = process.env.PORT || 3000,
         parser       = require('body-parser'),
-        cors         = require('cors');
+        cors         = require('cors'),
+        http         = require('http').Server(app);
 
 app.set('port', port);
 app.use(cors());
@@ -43,6 +44,29 @@ app.all('*', (req, res) => {
     res.status(404).send(`{"result": "Failure", "error": "Bad Route"}`)
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`listening on port ${port}`);
 });
+
+const io = require('socket.io')(server);
+
+io.on('connection', (socket) => {
+    console.log('New user connected')
+    
+	//default username
+	socket.username = "Anonymous"
+    
+    
+    //listen on new_message
+    socket.on('disconnect', () => {
+        //broadcast the new message
+        console.log("bye")
+    })
+    
+    //listen on typing
+    socket.on('test', async () => {
+        const result1 = await surfboardCtl.getWeather(194);
+        const result2 = await surfboardCtl.getWeather(4219);
+        socket.emit('broadcast', `broadcast! ${result1} ${result2}`);
+    })
+})

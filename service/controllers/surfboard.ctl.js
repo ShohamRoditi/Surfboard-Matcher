@@ -1,29 +1,6 @@
 const Surfboard   = require('../models/surfboard'),
       fetch       = require('node-fetch');
 
-/* Connects to the external weather API to get wave height in the chosen location */
-async function getWeather(location){
-    let result;
-    let url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=' + location + '&fields=swell.maxBreakingHeight';
-
-    try {
-        const response = await fetch(url);
-        result = await response.json();
-    } 
-    catch (error) {
-        console.log(error);
-    }
-
-    if(result.error_response)
-        return -1;
-    
-    if(result[0].swell.maxBreakingHeight > 4)
-        return 4;
-    
-    return(result[0].swell.maxBreakingHeight);
-      
-}
-
 /* Figures the minimum weight limit of the surfboard according to the user's weight and surfing level */
 function getRange(weight, level){
 
@@ -75,7 +52,36 @@ function getRange(weight, level){
     }
 }
 
+/* Connects to the external weather API to get wave height in the chosen location */
+async function getWeather (location){
+    let result;
+    let url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=' + location + '&fields=swell.maxBreakingHeight';
+
+    try {
+        const response = await fetch(url);
+        result = await response.json();
+        console.log(result);
+    } 
+    catch (error) {
+        console.log(error);
+    }
+
+    if(result.error_response)
+        return -1;
+    
+    // if(result[0].swell.maxBreakingHeight > 4)
+    //     return 4;
+    
+    return(result[0].swell.maxBreakingHeight);
+    
+}
+
 module.exports = {
+    getWeather: async (location) => {
+        const result = await getWeather(location);
+        console.log(result);
+        return result;
+    },
 
     /* Gets all surfboards */
     getAll: async (req, res) => {
@@ -97,6 +103,10 @@ module.exports = {
         if(swellSize < 0){
             res.status(404).send(`{"result": "Failure", "params":{"conditions": ${JSON.stringify(conditions)}, "location": "${req.query.location}"}, "error": "No Match Found"}`);
             return;
+        }
+        
+        if(swellSize > 4){
+            swellSize = 4;
         }
 
         Surfboard.find(conditions).then(result => {

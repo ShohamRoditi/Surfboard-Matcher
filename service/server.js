@@ -7,6 +7,8 @@ const   express      = require('express'),
         cors         = require('cors'),
         http         = require('http').Server(app);
 
+var socket;
+
 app.set('port', port);
 app.use(cors());
 app.use(parser.json({extended : true}));
@@ -40,19 +42,15 @@ app.get('/api', (req, res) => {
     res.redirect('https://documenter.getpostman.com/view/5628146/RztfvBcS');
 });
 
-app.all('*', (req, res) => {
-    res.status(404).send(`{"result": "Failure", "error": "Bad Route"}`)
-});
-
 const server = app.listen(port, () => {
     console.log(`listening on port ${port}`);
 });
 
 const io = require('socket.io')(server);
 
-io.on('connection', (socket) => {
+io.on('connection', (sock) => {
     console.log('New user connected')
-    
+    socket = sock;
 	//default username
 	socket.username = "Anonymous"
     
@@ -64,9 +62,21 @@ io.on('connection', (socket) => {
     })
     
     //listen on typing
-    socket.on('test', async () => {
+    socket.on('connected', async () => {
         const result1 = await surfboardCtl.getWeather(194);
         const result2 = await surfboardCtl.getWeather(4219);
-        socket.emit('broadcast', `broadcast! ${result1} ${result2}`);
+        socket.emit('conditions', {location1: result1, location2: result2});
     })
 })
+
+/* Admin Check Conditions route */
+app.get('/admin/updateClients', async (req, res) => {
+    const result1 = await surfboardCtl.getWeather(194);
+    const result2 = await surfboardCtl.getWeather(4219);
+    io.emit('conditions', {location1: result1, location2: result2});
+    res.status(200).send(`{"result": "Success", "response": {"location1": ${result1}, "location2": ${result2}}}`);
+})
+
+app.all('*', (req, res) => {
+    res.status(404).send(`{"result": "Failure", "error": "Bad Route"}`)
+});

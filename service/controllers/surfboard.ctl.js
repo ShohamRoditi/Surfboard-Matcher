@@ -55,12 +55,16 @@ function getRange(weight, level){
 /* Connects to the external weather API to get wave height in the chosen location */
 async function getWeather (location){
     let result;
-    let url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=' + location + '&fields=swell.maxBreakingHeight';
+    let url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=' + location;
 
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+            },
+        });
         result = await response.json();
-        console.log(result);
     } 
     catch (error) {
         console.log(error);
@@ -72,7 +76,7 @@ async function getWeather (location){
     // if(result[0].swell.maxBreakingHeight > 4)
     //     return 4;
     
-    return(result[0].swell.maxBreakingHeight);
+    return(result[result.length-1].swell.minBreakingHeight);
     
 }
 

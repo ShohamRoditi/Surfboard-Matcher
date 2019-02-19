@@ -6,8 +6,6 @@ const   express      = require('express'),
         parser       = require('body-parser'),
         cors         = require('cors');
 
-var socket;
-
 app.set('port', port);
 app.use(cors());
 app.use(parser.json({extended : true}));
@@ -47,13 +45,11 @@ const server = app.listen(port, () => {
 
 const io = require('socket.io')(server);
 
-io.on('connection', (sock) => {
+io.on('connection', (socket) => {
     console.log('New user connected');
-    socket = sock;
 
     socket.on('disconnect', () => {
-        //broadcast the new message
-        console.log("bye")
+        console.log("bye");
     })
     
     socket.on('connected', async () => {

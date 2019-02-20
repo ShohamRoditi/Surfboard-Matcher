@@ -1,10 +1,10 @@
 const   express      = require('express'),
         app          = express(),
-        surfboardCtl = require('./controllers/surfboard.ctl'),
-        userCtl      = require('./controllers/user.ctl'),
-        port         = process.env.PORT || 3000,
-        parser       = require('body-parser'),
         cors         = require('cors');
+        parser       = require('body-parser'),
+        port         = process.env.PORT || 3000,
+        userCtl      = require('./controllers/user.ctl'),
+        surfboardCtl = require('./controllers/surfboard.ctl'),
 
 app.set('port', port);
 app.use(cors());
@@ -23,20 +23,20 @@ app.use((req, res, next) => {
 /*** Surfboard routes ***/
 app.get('/getAllSurfboards', surfboardCtl.getAll);
 app.get('/matchSurfboard', surfboardCtl.getMatched);
-app.put('/admin/updateSurfboard', surfboardCtl.updateSurfboard);
 app.post('/admin/addSurfboard', surfboardCtl.addSurfboard);
+app.put('/admin/updateSurfboard', surfboardCtl.updateSurfboard);
 app.delete('/admin/deleteSurfboard', surfboardCtl.deleteSurfboard);
 
 /*** User routes ***/
 app.get('/getUser', userCtl.getUser);
-app.get('/getHistory', userCtl.getHistory);
 app.post('/addUser', userCtl.addUser);
+app.get('/getHistory', userCtl.getHistory);
 app.put('/updateUser', userCtl.updateUser);
 app.put('/addUserSurfboard', userCtl.addUserSurfboard);
 app.delete('/deleteFromHistory', userCtl.deleteFromHistory);
 
 app.get('/api', (req, res) => {
-    res.redirect('https://documenter.getpostman.com/view/5628146/RztfvBcS');
+    res.redirect(process.env.API);
 });
 
 const server = app.listen(port, () => {

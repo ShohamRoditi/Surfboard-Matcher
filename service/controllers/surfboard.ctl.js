@@ -1,5 +1,5 @@
-const Surfboard   = require('../models/surfboard'),
-      fetch       = require('node-fetch');
+const   fetch       = require('node-fetch'),
+        Surfboard   = require('../models/surfboard');
 
 /* Figures the minimum weight limit of the surfboard according to the user's weight and surfing level */
 function getRange(weight, level){
@@ -55,15 +55,15 @@ function getRange(weight, level){
 /* Connects to the external weather API to get wave height in the chosen location */
 async function getWeather (location){
     let result;
-    let url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=' + location;
+    let url = `${process.env.WEATHER_API}${location}`;
 
     try {
         const response = await fetch(url, {
             method: "GET",
             headers: {
                 'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
             },
-            cache: 'no-store'
         });
         result = await response.json();
     } 
@@ -104,8 +104,8 @@ module.exports = {
         let minWeight = getRange(parseFloat(req.query.weight), parseInt(req.query.level));
         let swellSize =  await getWeather(req.query.location);
         
-        if(swellSize > 4){
-            swellSize = 4;
+        if(swellSize > process.env.MAX_SWELL){
+            swellSize = process.env.MAX_SWELL;
         }
 
         const conditions = {height: {'$gt': parseFloat(req.query.height)}, userMinWeight: minWeight, maxSwell: {'$gt': swellSize}};

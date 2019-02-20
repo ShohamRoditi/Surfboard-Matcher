@@ -1,6 +1,6 @@
-const User      = require('../models/user.js'),
-      Surfboard = require('../models/surfboard'),
-      ObjectId  = require('mongoose').Types.ObjectId;
+const   User      = require('../models/user.js'),
+        Surfboard = require('../models/surfboard'),
+        ObjectId  = require('mongoose').Types.ObjectId;
 
 module.exports = {
     /* Gets user's saved matching surfboards */

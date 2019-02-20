@@ -63,18 +63,19 @@ async function getWeather (location){
             headers: {
                 'Accept': 'application/json',
             },
+            cache: 'no-store'
         });
         result = await response.json();
     } 
     catch (error) {
+        console.log("hello1");
         console.log(error);
     }
 
-    if(result.error_response)
+    if(result.error_response){
+        console.log("hello");
         return -1;
-    
-    // if(result[0].swell.maxBreakingHeight > 4)
-    //     return 4;
+    }
     
     return(result[result.length-1].swell.minBreakingHeight);
     
@@ -102,15 +103,16 @@ module.exports = {
     getMatched: async (req, res) => {
         let minWeight = getRange(parseFloat(req.query.weight), parseInt(req.query.level));
         let swellSize =  await getWeather(req.query.location);
+        
+        if(swellSize > 4){
+            swellSize = 4;
+        }
+
         const conditions = {height: {'$gt': parseFloat(req.query.height)}, userMinWeight: minWeight, maxSwell: {'$gt': swellSize}};
 
         if(swellSize < 0){
             res.status(404).send(`{"result": "Failure", "params":{"conditions": ${JSON.stringify(conditions)}, "location": "${req.query.location}"}, "error": "No Match Found"}`);
             return;
-        }
-        
-        if(swellSize > 4){
-            swellSize = 4;
         }
 
         Surfboard.find(conditions).then(result => {

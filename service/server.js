@@ -57,6 +57,11 @@ io.on('connection', (socket) => {
         const result2 = await surfboardCtl.getWeather(4219);
         socket.emit('conditions', {location1: result1, location2: result2});
     })
+
+    socket.on('favChange', (data) => {
+        console.log(data);
+        socket.emit('favChange', {email: data.email, id: data.id});
+    })
 })
 
 /* Admin Check Conditions route */

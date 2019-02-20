@@ -58,7 +58,7 @@ module.exports = {
 
         User.updateOne(conditions, update, opts).then( result => {
             if(result.nModified === 0){
-                res.status(404).send(`{"result": "Failure", "params":{"email": "${req.query.email}", "update": ${JSON.stringify(update)}}}`);
+                res.status(200).send(`{"result": "Failure", "params":{"email": "${req.query.email}", "update": ${JSON.stringify(update)}}}`);
                 return;
             }
 

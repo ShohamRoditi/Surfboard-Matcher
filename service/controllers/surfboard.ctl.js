@@ -1,28 +1,7 @@
-const Surfboard   = require('../models/surfboard'),
-      fetch       = require('node-fetch');
+const   fetch       = require('node-fetch'),
+        Surfboard   = require('../models/surfboard');
 
-async function getWeather(location){
-    let result;
-    let url = 'http://magicseaweed.com/api/fddcb4d4dfe5f4d98e9ba4c0351d9614/forecast/?spot_id=' + location + '&fields=swell.maxBreakingHeight';
-
-    try {
-        const response = await fetch(url);
-        result = await response.json();
-    } 
-    catch (error) {
-        console.log(error);
-    }
-
-    if(result.error_response)
-        return -1;
-    
-    if(result[0].swell.maxBreakingHeight > 4)
-        return 4;
-    
-    return(result[0].swell.maxBreakingHeight);
-      
-}
-
+/* Figures the minimum weight limit of the surfboard according to the user's weight and surfing level */
 function getRange(weight, level){
 
     let min = 35;
@@ -73,8 +52,43 @@ function getRange(weight, level){
     }
 }
 
-module.exports = {
+/* Connects to the external weather API to get wave height in the chosen location */
+async function getWeather (location){
+    let result;
+    let url = `${process.env.WEATHER_API}${location}`;
 
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
+            },
+        });
+        result = await response.json();
+    } 
+    catch (error) {
+        console.log("hello1");
+        console.log(error);
+    }
+
+    if(result.error_response){
+        console.log("hello");
+        return -1;
+    }
+    
+    return(result[result.length-1].swell.minBreakingHeight);
+    
+}
+
+module.exports = {
+    getWeather: async (location) => {
+        const result = await getWeather(location);
+        console.log(result);
+        return result;
+    },
+
+    /* Gets all surfboards */
     getAll: async (req, res) => {
         Surfboard.find({}).then(result => {
             if(result)
@@ -85,9 +99,15 @@ module.exports = {
         });
     },
 
+    /* Gets matching surfboards according to the user's weight, surfing level and wave height in chosen location */
     getMatched: async (req, res) => {
         let minWeight = getRange(parseFloat(req.query.weight), parseInt(req.query.level));
         let swellSize =  await getWeather(req.query.location);
+        
+        if(swellSize > process.env.MAX_SWELL){
+            swellSize = process.env.MAX_SWELL;
+        }
+
         const conditions = {height: {'$gt': parseFloat(req.query.height)}, userMinWeight: minWeight, maxSwell: {'$gt': swellSize}};
 
         if(swellSize < 0){
@@ -104,6 +124,7 @@ module.exports = {
         });
     },
 
+    /* For now, updates a surfboards Brand */
     updateSurfboard: async (req,res) => {
         const {brand = null} = req.query;
         const opts = {runValidators: true};
@@ -118,6 +139,7 @@ module.exports = {
         });
     },
 
+    /* Removes a surfboard */
     deleteSurfboard: async (req,res) => {
         Surfboard.findOneAndDelete({_id: req.query.id}).then(result => {
             if(result)
@@ -129,6 +151,7 @@ module.exports = {
         
     },
 
+    /* Adds a surfboard */
     addSurfboard: async (req,res) => {
         const {brand = null, maxSwell = null, height = null, width = null, thickness = null, userMinWeight = null, userMaxWeight = null} = req.body,
                minWeight = getRange(userMinWeight, 0);
